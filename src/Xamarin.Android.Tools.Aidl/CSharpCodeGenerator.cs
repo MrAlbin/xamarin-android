@@ -277,6 +277,20 @@ namespace Xamarin.Android.Tools.Aidl
 					w.WriteLine ("\t\t\t\t{0} {1} = default ({0});", ToOutputTypeName (name_cache.ToCSharp (a.Type)), "arg" + i);
 					if (a.Modifier == null || a.Modifier.Contains ("in"))
 						w.WriteLine ("\t\t\t\t{0}", GetCreateStatements (a.Type, "data", "arg" + i));
+					else if (a.Modifier != null && a.Modifier.Contains ("out")) {
+						if (a.Type.ArrayDimension > 0) {
+							w.WriteLine (@"				int {0}_length = data.ReadInt();
+				if ({0}_length < 0) {{
+					{0} = null;
+				}}
+				else {{
+					{0} = new {1}[{0}_length];
+				}}", "arg" + i, ToOutputTypeName (name_cache.ToCSharp (a.Type)).Replace ("[]", ""));
+						}
+						else {
+							w.WriteLine ("\t\t\t\t{0} = new {1}();", "arg" + i, ToOutputTypeName (name_cache.ToCSharp (a.Type)));
+						}
+					}
 				}
 				string args = String.Join (", ", (from i in Enumerable.Range (0, method.Arguments.Length) select "arg" + i).ToArray ());
 				if (isVoidReturn)
@@ -289,8 +303,8 @@ namespace Xamarin.Android.Tools.Aidl
 					w.WriteLine ("\t\t\t\t{0}", GetWriteStatements (method.ReturnType, "reply", "result", "global::Android.OS.ParcelableWriteFlags.ReturnValue"));
 				for (int i = 0; method.Arguments != null && i < method.Arguments.Length; i++) {
 					var a = method.Arguments [i];
-					if (a.Modifier == null || a.Modifier.Contains ("out"))
-						w.WriteLine ("\t\t\t\t{0}", GetWriteStatements (a.Type, "data", "arg" + i, "global::Android.OS.ParcelableWriteFlags.None"));
+					if (a.Modifier != null && a.Modifier.Contains ("out"))
+						w.WriteLine ("\t\t\t\t{0}", GetWriteStatements (a.Type, "reply", "arg" + i, "global::Android.OS.ParcelableWriteFlags.None"));
 				}
 				w.WriteLine ("\t\t\t\treturn true;");
 				w.WriteLine ("\t\t\t\t}");
