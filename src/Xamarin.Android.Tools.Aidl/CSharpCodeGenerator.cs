@@ -471,7 +471,8 @@ namespace Xamarin.Android.Tools.Aidl
 			case "Android.Runtime.JavaDictionary":
 				return String.Format ("{0} = (global::Android.Runtime.JavaDictionary) {1}.ReadHashMap ((global::Java.Lang.ClassLoader) null);", arg, parcel);
 			case "Android.OS.IParcelable":
-				return String.Format ("{0} = {1}.ReadInt () != 0 ? ({2}) global::Android.OS.Bundle.Creator.CreateFromParcel ({1}) : null;", arg, parcel, ToOutputTypeName (csname));
+				//return String.Format ("{0} = {1}.ReadInt () != 0 ? ({2}) global::Android.OS.Bundle.Creator.CreateFromParcel ({1}) : null;", arg, parcel, ToOutputTypeName (csname));
+				return String.Format ("{0} = {1}.ReadInt () != 0 ? new {2}({1}) : null;", arg, parcel, ToOutputTypeName (csname));
 			case "Android.OS.IBinder":
 				return String.Format ("{0} = {1}.ReadStrongBinder ();", arg, parcel);
 			case "Android.OS.IBinder []":
@@ -483,7 +484,8 @@ namespace Xamarin.Android.Tools.Aidl
 					if (type.ArrayDimension > 0) // ParcelableCreator
 						return String.Format ("{0} = global::System.Array.ConvertAll<global::Java.Lang.Object,{2}> ({1}.CreateTypedArray ({2}.Creator), __input => ({2}) __input);", arg, parcel, ToOutputTypeName (csname.Substring (0, csname.Length - 3)));
 					else
-						return String.Format ("{0} = {1}.ReadInt () != 0 ? ({2}) global::Android.OS.Bundle.Creator.CreateFromParcel ({1}) : null;", arg, parcel, ToOutputTypeName (csname));
+							//return String.Format ("{0} = {1}.ReadInt () != 0 ? ({2}) global::Android.OS.Bundle.Creator.CreateFromParcel ({1}) : null;", arg, parcel, ToOutputTypeName (csname));
+							return String.Format ("{0} = {1}.ReadInt () != 0 ? new {2}({1}) : null;", arg, parcel, ToOutputTypeName (csname));
 				}
 				else if (type.ArrayDimension > 0)
 					throw new NotSupportedException (String.Format ("AIDL does not support creating this array type: {0}", type));
@@ -515,7 +517,8 @@ namespace Xamarin.Android.Tools.Aidl
 			case "double []":
 				return String.Format ("{1}.ReadDoubleArray ({0});", arg, parcel);
 			case "Android.OS.IParcelable":
-				return String.Format ("{0} = {1}.ReadInt () != 0 ? ({2}) global::Android.OS.Bundle.Creator.CreateFromParcel ({1}) : null;", arg, parcel, ToOutputTypeName (csname));
+				//return String.Format ("{0} = {1}.ReadInt () != 0 ? ({2}) global::Android.OS.Bundle.Creator.CreateFromParcel ({1}) : null;", arg, parcel, ToOutputTypeName (csname));
+				return String.Format ("{0} = {1}.ReadInt () != 0 ? new {2}({1}) : null;", arg, parcel, ToOutputTypeName (csname));
 			// FIXME: are JavaList for List and JavaDictionary for Map always appropriate?
 			case "List":
 			case "Android.Runtime.JavaList":
